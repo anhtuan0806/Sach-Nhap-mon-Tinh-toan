@@ -1,0 +1,449 @@
+\newpage
+\chapter*{\centering{\MakeUppercase{3. MỘT SỐ CHƯƠNG TRÌNH SỐ HỌC ĐƠN GIẢN}}}
+\addcontentsline{toc}{chapter}{\textcolor{fitblue}{\MakeUppercase{3. MỘT SỐ CHƯƠNG TRÌNH SỐ HỌC ĐƠN GIẢN}}}
+
+\noindent \indent Bây giờ, sau khi đã tìm hiểu về một số cấu trúc cơ bản của Python, đã đến lúc chúng ta bắt đầu suy nghĩ về cách kết hợp những cấu trúc đó để viết các chương trình đơn giản. Trong quá trình thực hiện, chúng tôi sẽ lồng ghép thêm một vài cấu trúc ngôn ngữ và một số kỹ thuật thuật toán khác.
+
+%=============SEC================
+\section*{3.1 Liệt kê vét cạn (Exhaustive Enumeration)}
+\addcontentsline{toc}{section}{\textcolor{black}{3.1 Liệt kê vét cạn (Exhaustive Enumeration)}}
+
+\noindent \indent Đoạn mã trong Hình 3.1 in ra căn bậc ba số nguyên của một số nguyên (nếu nó tồn tại). Nếu giá trị nhập vào không phải là một số lập phương hoàn chỉnh, chương trình sẽ in ra một thông báo tương ứng.
+
+\begin{tcolorbox}[title=Hình 3.1: Sử dụng phương pháp duyệt cạn kiệt để tìm căn bậc ba]
+
+\begin{verbatim}
+# Tìm căn bậc ba của một số lập phương hoàn chỉnh
+x = int(input('Enter an integer: '))
+ans = 0
+while ans**3 < abs(x):
+    ans = ans + 1
+if ans**3 != abs(x):
+    print(x, 'is not a perfect cube')
+else:
+    if x < 0:
+        ans = -ans
+    print('Cube root of', x, 'is', ans)
+\end{verbatim}
+
+\end{tcolorbox}
+
+
+Với những giá trị nào của $x$ thì chương trình này sẽ kết thúc? Câu trả lời là: ``Mọi số nguyên''. Điều này có thể được lập luận khá đơn giản:
+
+\begin{itemize}
+    \item Giá trị của biểu thức \texttt{ans**3} bắt đầu từ 0 và lớn dần sau mỗi lần lặp.
+    \item Khi nó đạt đến hoặc vượt quá \texttt{abs(x)}, vòng lặp sẽ kết thúc.
+    \item Vì \texttt{abs(x)} luôn là số dương, nên chỉ có một số lượng hữu hạn các lần lặp trước khi vòng lặp buộc phải kết thúc.
+\end{itemize}
+
+Mỗi khi viết một vòng lặp, bạn nên nghĩ về một hàm giảm (decrementing function) phù hợp. Đây là một hàm có các đặc tính sau:
+
+\begin{itemize}
+    \item Nó ánh xạ một tập hợp các biến chương trình thành một số nguyên.
+    \item Khi bắt đầu vào vòng lặp, giá trị của nó là không âm.
+    \item Khi giá trị của nó $\le 0$, vòng lặp kết thúc.
+    \item Giá trị của nó giảm đi sau mỗi lần thực hiện vòng lặp.
+\end{itemize}
+
+Hàm giảm cho vòng lặp \texttt{while} trong Hình 3.1 là gì? Đó chính là: $|x| - ans^3$.
+
+Bây giờ, hãy thử đưa vào một số lỗi và xem điều gì xảy ra. Đầu tiên, hãy thử vô hiệu hóa (comment out) câu lệnh \texttt{ans = 0}. Trình thông dịch Python sẽ in ra thông báo lỗi:
+
+\begin{verbatim}
+NameError: name 'ans' is not defined
+\end{verbatim}
+
+vì trình thông dịch cố gắng tìm giá trị mà \texttt{ans} liên kết trước khi nó được liên kết với bất kỳ thứ gì.
+
+Bây giờ, hãy khôi phục việc khởi tạo \texttt{ans}, thay thế câu lệnh \texttt{ans = ans + 1} bằng \texttt{ans = ans}, và thử tìm căn bậc ba của 8. Sau khi bạn đã mệt mỏi vì chờ đợi, hãy nhấn tổ hợp phím ``Control C'' (nhấn giữ phím Ctrl và phím C đồng thời). Thao tác này sẽ đưa bạn quay trở lại dấu nhắc lệnh trong shell.
+
+Tiếp theo, hãy thêm câu lệnh:
+
+\begin{verbatim}
+print('Value of the decrementing function abs(x) - ans**3 is', abs(x) - ans**3)
+\end{verbatim}
+
+vào đầu vòng lặp và thử chạy lại. Lần này, nó sẽ in ra dòng chữ:
+
+\begin{verbatim}
+Value of the decrementing function abs(x) - ans**3 is 8
+\end{verbatim}
+
+lặp đi lặp lại liên tục.
+
+Chương trình sẽ chạy mãi mãi vì thân vòng lặp không còn làm giảm khoảng cách giữa $ans^3$ và $|x|$. Khi đối mặt với một chương trình dường như không bao giờ kết thúc, các lập trình viên kinh nghiệm thường chèn các câu lệnh \texttt{print} như ở đây để kiểm tra xem hàm giảm có thực sự đang giảm đi hay không.
+
+Kỹ thuật thuật toán được sử dụng trong chương trình này là một biến thể của phương pháp ``dự đoán và kiểm tra'' được gọi là duyệt cạn kiệt (exhaustive enumeration). Chúng ta liệt kê tất cả các khả năng cho đến khi tìm thấy đáp án đúng hoặc cạn kiệt không gian các khả năng. Thoạt nhìn, đây có vẻ là một cách giải quyết vấn đề cực kỳ ngớ ngẩn. Tuy nhiên, điều đáng ngạc nhiên là các thuật toán duyệt cạn kiệt thường là cách thực tế nhất để giải quyết một bài toán. Chúng thường dễ cài đặt và dễ hiểu. Và trong nhiều trường hợp, chúng chạy đủ nhanh cho mọi mục đích thực tế.
+
+Hãy đảm bảo bạn đã xóa hoặc vô hiệu hóa câu lệnh \texttt{print} vừa chèn vào và khôi phục lại câu lệnh \texttt{ans = ans + 1}, sau đó thử tìm căn bậc ba của 1957816251. Chương trình sẽ hoàn thành gần như ngay lập tức. Bây giờ, hãy thử với số 7406961012236344616.
+
+Như bạn có thể thấy, ngay cả khi cần hàng triệu lần dự đoán, đó thường không phải là vấn đề. Máy tính hiện đại có tốc độ kinh ngạc. Phải mất khoảng một nano giây (một phần tỷ giây) để thực thi một chỉ lệnh. Thật khó để cảm nhận được tốc độ đó nhanh như thế nào. Để dễ hình dung, ánh sáng chỉ đi được khoảng một foot (0,3 mét) trong hơn một nano giây. Một cách khác để tư duy: trong khoảng thời gian âm thanh giọng nói của bạn truyền đi được 100 feet, một máy tính hiện đại có thể thực thi hàng triệu chỉ lệnh.
+
+Để giải trí, hãy thử thực thi đoạn mã sau:
+
+\begin{verbatim}
+maxVal = int(input('Enter a positive integer: '))
+i = 0
+while i < maxVal:
+    i = i + 1
+print(i)
+\end{verbatim}
+
+Hãy xem bạn cần nhập một số nguyên lớn đến mức nào trước khi thấy một sự tạm dừng có thể cảm nhận được trước khi kết quả được in ra.
+
+\noindent \textbf{Bài tập nhỏ:} Viết một chương trình yêu cầu người dùng nhập một số nguyên và in ra hai số nguyên \texttt{root} và \texttt{pwr} sao cho $0 < pwr < 6$ và $root^{pwr}$ bằng với số nguyên mà người dùng đã nhập. Nếu không tồn tại cặp số nguyên nào như vậy, chương trình nên in ra một thông báo tương ứng.
+
+%=============SEC================
+\section*{3.2 Vòng lặp For}
+\addcontentsline{toc}{section}{\textcolor{black}{3.2 Vòng lặp For}}
+
+\noindent \indent Các vòng lặp \texttt{while} mà chúng ta đã sử dụng từ trước đến nay mang tính khuôn mẫu rất cao. Mỗi vòng lặp đều lặp qua một dãy các số nguyên. Python cung cấp một cơ chế ngôn ngữ là vòng lặp \texttt{for}, có thể được sử dụng để đơn giản hóa các chương trình chứa loại hình lặp này.
+
+Dạng tổng quát của câu lệnh \texttt{for} là (lưu ý các từ in nghiêng là mô tả, không phải mã nguồn thực tế):
+
+\begin{verbatim}
+for biến in dãy_giá_trị:
+    khối_mã
+\end{verbatim}
+
+Biến đứng sau \texttt{for} được liên kết với giá trị đầu tiên trong dãy, và khối mã được thực thi. Sau đó, biến được gán giá trị thứ hai trong dãy và khối mã lại được thực thi một lần nữa. Quá trình này tiếp tục cho đến khi dãy giá trị bị cạn kiệt hoặc một câu lệnh \texttt{break} được thực thi bên trong khối mã.
+
+Dãy các giá trị liên kết với biến thường được tạo ra nhất bằng cách sử dụng hàm tích hợp \texttt{range}, hàm này trả về một loạt các số nguyên. Hàm \texttt{range} nhận ba đối số nguyên: \texttt{start} (bắt đầu), \texttt{stop} (dừng), và \texttt{step} (bước nhảy). Nó tạo ra một cấp số cộng: $start, start + step, start + 2*step$, v.v.
+
+\begin{itemize}
+    \item Nếu \texttt{step} dương, phần tử cuối cùng là số nguyên lớn nhất có dạng $start + i*step$ nhỏ hơn \texttt{stop}.
+    \item Nếu \texttt{step} âm, phần tử cuối cùng là số nguyên nhỏ nhất có dạng $start + i*step$ lớn hơn \texttt{stop}.
+\end{itemize}
+
+Ví dụ: biểu thức \texttt{range(5, 40, 10)} tạo ra dãy $5, 15, 25, 35$; và \texttt{range(40, 5, -10)} tạo ra dãy $40, 30, 20, 10$. Nếu đối số đầu tiên bị bỏ qua, nó mặc định là 0; và nếu đối số cuối cùng (kích thước bước nhảy) bị bỏ qua, nó mặc định là 1. Ví dụ: \texttt{range(0, 3)} và \texttt{range(3)} đều tạo ra dãy $0, 1, 2$. Các con số trong cấp số này được tạo ra theo cơ chế ``khi cần thiết'' (as needed), vì vậy ngay cả các biểu thức như \texttt{range(1000000)} cũng tiêu tốn rất ít bộ nhớ.$^{17}$ Chúng ta sẽ thảo luận sâu hơn về \texttt{range} trong Mục 5.2.
+
+Ít phổ biến hơn, chúng ta có thể chỉ định dãy giá trị để lặp trong vòng lặp \texttt{for} bằng cách sử dụng một giá trị trực tiếp (literal), ví dụ: \texttt{[0, 3, 2]}.
+
+Xét đoạn mã:
+
+\begin{verbatim}
+x = 4
+for i in range(0, x):
+    print(i)
+\end{verbatim}
+
+Kết quả in ra là: $0, 1, 2, 3$.
+
+Bây giờ, hãy suy nghĩ về đoạn mã sau:
+
+\begin{verbatim}
+x = 4
+for i in range(0, x):
+    print(i)
+    x = 5
+\end{verbatim}
+
+Điều này đặt ra câu hỏi liệu việc thay đổi giá trị của $x$ bên trong vòng lặp có ảnh hưởng đến số lần lặp hay không. Câu trả lời là không. Các đối số của hàm \texttt{range} trong dòng lệnh \texttt{for} được tính toán ngay trước lần lặp đầu tiên của vòng lặp, và không được tính toán lại cho các lần lặp tiếp theo.
+
+Để thấy rõ cơ chế này, hãy xem xét:
+
+\begin{verbatim}
+x = 4
+for j in range(x):
+    for i in range(x):
+        print(i)
+        x = 2
+\end{verbatim}
+
+Kết quả sẽ in ra:
+
+\begin{verbatim}
+0, 1, 2, 3
+0, 1
+0, 1
+0, 1
+\end{verbatim}
+
+(lần lặp đầu tiên của vòng lặp ngoài với $x=4$)
+
+Lý do là vì hàm \texttt{range} trong vòng lặp ngoài chỉ được tính toán một lần duy nhất, nhưng hàm \texttt{range} trong vòng lặp trong được tính toán lại mỗi khi câu lệnh \texttt{for} bên trong được chạm tới.
+
+Mã nguồn trong Hình 3.2 thực thi lại thuật toán duyệt cạn kiệt để tìm căn bậc ba. Câu lệnh \texttt{break} trong vòng lặp \texttt{for} khiến vòng lặp kết thúc trước khi nó chạy qua hết tất cả các phần tử trong dãy giá trị đang lặp.
+
+\begin{tcolorbox}[title=Hình 3.2: Sử dụng câu lệnh \texttt{for} và \texttt{break}]
+
+\begin{verbatim}
+# Tìm căn bậc ba của một số lập phương hoàn chỉnh
+x = int(input('Enter an integer: '))
+for ans in range(0, abs(x)+1):
+    if ans**3 >= abs(x):
+        break
+if ans**3 != abs(x):
+    print(x, 'is not a perfect cube')
+else:
+    if x < 0:
+        ans = -ans
+    print('Cube root of', x, 'is', ans)
+\end{verbatim}
+
+\end{tcolorbox}
+
+Câu lệnh \texttt{for} có thể được dùng kết hợp với toán tử \texttt{in} để lặp qua các ký tự của một chuỗi một cách thuận tiện. Ví dụ:
+
+\begin{verbatim}
+total = 0
+for c in '12345678':
+    total = total + int(c)
+print(total)
+\end{verbatim}
+
+Đoạn mã này cộng các chữ số trong chuỗi \texttt{'12345678'} và in ra tổng.
+
+\noindent \textbf{Bài tập nhỏ:} Cho $s$ là một chuỗi chứa một dãy các số thập phân ngăn cách nhau bởi dấu phẩy, ví dụ: \texttt{s = '1.23,2.4,3.123'}. Hãy viết một chương trình in ra tổng của các số trong chuỗi $s$.
+
+%=============SEC================
+\section*{3.3 Nghiệm xấp xỉ và Tìm kiếm nhị phân (Bisection Search)}
+\addcontentsline{toc}{section}{\textcolor{black}{3.3 Nghiệm xấp xỉ và Tìm kiếm nhị phân (Bisection Search)}}
+
+\noindent \indent Hãy tưởng tượng ai đó yêu cầu bạn viết một chương trình tìm căn bậc hai của một số không âm bất kỳ. Bạn nên làm gì?
+
+Trước tiên, có lẽ bạn nên bắt đầu bằng việc yêu cầu một phát biểu bài toán (problem statement) tốt hơn. Ví dụ, chương trình nên làm gì nếu được yêu cầu tìm căn bậc hai của 2? Căn bậc hai của 2 không phải là một số hữu tỉ. Điều này có nghĩa là không có cách nào để biểu diễn chính xác giá trị của nó dưới dạng một chuỗi chữ số hữu hạn (hoặc dưới dạng số thực dấu phẩy động), vì vậy bài toán như phát biểu ban đầu là không thể giải quyết được.
+
+Yêu cầu đúng đắn hơn là một chương trình tìm một giá trị xấp xỉ (approximation) của căn bậc hai — tức là một đáp án đủ gần với căn bậc hai thực tế để có thể sử dụng được. Chúng ta sẽ quay lại vấn đề này một cách chi tiết hơn ở phần sau của cuốn sách. Nhưng hiện tại, hãy coi ``đủ gần'' là một đáp án nằm trong một khoảng hằng số, gọi là epsilon ($\epsilon$), so với đáp án thực tế.
+
+Mã nguồn trong Hình 3.3 thực thi một thuật toán tìm xấp xỉ căn bậc hai. Nó sử dụng một toán tử mới là \texttt{+=}. Câu lệnh gán \texttt{ans += step} tương đương về mặt ngữ nghĩa với cách viết dài dòng hơn là \texttt{ans = ans + step}. Các toán tử \texttt{-=} và \texttt{*=} cũng hoạt động tương tự.
+
+\begin{tcolorbox}[title=Hình 3.3: Xấp xỉ căn bậc hai bằng phương pháp duyệt cạn kiệt]
+
+\begin{verbatim}
+x = 25
+epsilon = 0.01
+step = epsilon**2
+numGuesses = 0
+ans = 0.0
+while abs(ans**2 - x) >= epsilon and ans <= x:
+    ans += step
+    numGuesses += 1
+print('numGuesses =', numGuesses)
+if abs(ans**2 - x) >= epsilon:
+    print('Failed on square root of', x)
+else:
+    print(ans, 'is close to square root of', x)
+\end{verbatim}
+
+\end{tcolorbox}
+
+Một lần nữa, chúng ta lại sử dụng phương pháp duyệt cạn kiệt. Lưu ý rằng phương pháp tìm căn bậc hai này không có điểm chung nào với cách tính căn bậc hai bằng bút và giấy mà bạn có thể đã học ở trường phổ thông. Thực tế thường là: cách tốt nhất để giải quyết một vấn đề bằng máy tính hoàn toàn khác với cách tiếp cận vấn đề đó bằng tay.
+
+Khi chạy mã nguồn này, kết quả in ra là:
+
+\begin{verbatim}
+numGuesses = 49990
+4.999000000001688 is close to square root of 25
+\end{verbatim}
+
+Chúng ta có nên thất vọng vì chương trình không nhận ra 25 là một số chính phương và in ra kết quả là 5 không? Không. Chương trình đã làm đúng những gì nó được định ra để làm. Mặc dù in ra số 5 là điều tốt, nhưng nó cũng không tốt hơn việc in ra bất kỳ giá trị nào đủ gần với số 5.
+
+Bạn nghĩ điều gì sẽ xảy ra nếu chúng ta đặt \texttt{x = 0.25}? Liệu nó có tìm được căn bậc hai gần bằng 0.5 không? Không. Nó sẽ báo cáo:
+
+\begin{verbatim}
+numGuesses = 2501
+Failed on square root of 0.25
+\end{verbatim}
+
+Duyệt cạn kiệt là một kỹ thuật tìm kiếm chỉ hoạt động nếu tập hợp các giá trị đang được tìm kiếm có bao hàm đáp án. Trong trường hợp này, chúng ta đang liệt kê các giá trị trong khoảng từ 0 đến giá trị của $x$. Khi $x$ nằm trong khoảng từ 0 đến 1, căn bậc hai của $x$ không nằm trong khoảng này. Một cách để khắc phục là thay đổi toán hạng thứ hai của \texttt{and} trong dòng đầu tiên của vòng lặp \texttt{while} thành:
+
+\begin{verbatim}
+while abs(ans**2 - x) >= epsilon and ans*ans <= x:
+\end{verbatim}
+
+Bây giờ, hãy nghĩ về việc chương trình sẽ mất bao lâu để chạy. Số lần lặp phụ thuộc vào việc đáp án gần số 0 đến mức nào và kích thước của các bước nhảy (\texttt{step}). Nói một cách đại khái, chương trình sẽ thực thi vòng lặp \texttt{while} tối đa $x/step$ lần.
+
+Hãy thử chạy mã nguồn với một số lớn hơn, ví dụ \texttt{x = 123456}. Nó sẽ chạy một lúc và sau đó in ra:
+
+\begin{verbatim}
+numGuesses = 3513631
+Failed on square root of 123456
+\end{verbatim}
+
+Bạn nghĩ chuyện gì đã xảy ra? Chắc chắn tồn tại một số dấu phẩy động xấp xỉ căn bậc hai của 123456 với sai số trong khoảng 0.01. Tại sao chương trình của chúng ta không tìm thấy nó? Vấn đề là kích thước bước nhảy của chúng ta quá lớn, và chương trình đã nhảy qua tất cả các đáp án phù hợp. Thử đặt \texttt{step} bằng \texttt{epsilon**3} và chạy lại chương trình. Cuối cùng nó sẽ tìm thấy câu trả lời phù hợp, nhưng có lẽ bạn sẽ không đủ kiên nhẫn để đợi nó làm xong.
+
+Chương trình sẽ phải thực hiện khoảng bao nhiêu lần đoán? Kích thước bước nhảy sẽ là 0.000001 và căn bậc hai của 123456 là khoảng 351.36. Điều này có nghĩa là chương trình sẽ phải thực hiện trong khoảng 351.000.000 lần đoán để tìm ra câu trả lời thỏa mãn. Chúng ta có thể cố gắng tăng tốc bằng cách bắt đầu gần đáp án hơn, nhưng điều đó giả định rằng chúng ta đã biết đáp án rồi.
+
+Đã đến lúc tìm kiếm một cách khác để tấn công bài toán này. Chúng ta cần chọn một thuật toán tốt hơn thay vì chỉ tinh chỉnh thuật toán hiện tại. Nhưng trước khi làm vậy, hãy nhìn vào một bài toán mà thoạt nhìn có vẻ hoàn toàn khác với việc tìm căn bậc hai.
+
+Xét bài toán tìm xem một từ bắt đầu bằng một chuỗi các chữ cái cho trước có xuất hiện trong một cuốn từ điển giấy của tiếng Anh hay không. Về nguyên tắc, duyệt cạn kiệt có thể hoạt động. Bạn có thể bắt đầu từ từ đầu tiên và kiểm tra từng từ cho đến khi tìm thấy từ bắt đầu bằng chuỗi ký tự đó hoặc hết từ để kiểm tra. Nếu từ điển chứa $n$ từ, trung bình sẽ mất $n/2$ lần kiểm tra để tìm thấy từ đó. Nếu từ đó không có trong từ điển, sẽ mất $n$ lần kiểm tra. Tất nhiên, những ai đã từng có trải nghiệm tra cứu một từ trong một cuốn từ điển vật lý (thay vì trực tuyến) sẽ không bao giờ làm theo cách này.
+
+May mắn thay, những người xuất bản từ điển giấy đã bỏ công sắp xếp các từ theo thứ tự từ điển (lexicographical order). Điều này cho phép chúng ta mở cuốn sách ở một trang mà chúng ta nghĩ từ đó có thể nằm ở đó (ví dụ: gần giữa cho các từ bắt đầu bằng chữ ``m''). Nếu chuỗi ký tự đứng trước từ đầu tiên trên trang đó theo thứ tự từ điển, chúng ta biết phải lùi lại. Nếu chuỗi ký tự đứng sau từ cuối cùng trên trang, chúng ta biết phải tiến lên. Ngược lại, chúng ta kiểm tra xem chuỗi ký tự đó có khớp với từ nào trên trang không.
+
+Bây giờ hãy lấy cùng ý tưởng đó và áp dụng cho bài toán tìm căn bậc hai của $x$. Giả sử chúng ta biết rằng một xấp xỉ tốt cho căn bậc hai của $x$ nằm đâu đó giữa 0 và \texttt{max}. Chúng ta có thể tận dụng thực tế là các con số được sắp thứ tự toàn phần (totally ordered). Nghĩa là, đối với bất kỳ cặp số phân biệt nào $n_1$ và $n_2$, thì hoặc $n_1 < n_2$ hoặc $n_1 > n_2$. Vì vậy, chúng ta có thể coi căn bậc hai của $x$ nằm đâu đó trên một đoạn thẳng từ $0$ đến \texttt{max}:
+
+\begin{verbatim}
+0 ---------------------------------------------- max
+\end{verbatim}
+
+và bắt đầu tìm kiếm trong khoảng đó. Vì chúng ta không nhất thiết biết bắt đầu tìm kiếm từ đâu, hãy bắt đầu ở chính giữa:
+
+\begin{verbatim}
+0 -------- guess -------- max
+\end{verbatim}
+
+Nếu đó không phải là câu trả lời đúng (và phần lớn thời gian là như vậy), hãy hỏi xem nó quá lớn hay quá nhỏ. Nếu nó quá lớn, chúng ta biết rằng câu trả lời phải nằm ở bên trái. Nếu nó quá nhỏ, chúng ta biết câu trả lời phải nằm ở bên phải. Sau đó, chúng ta lặp lại quy trình trên khoảng nhỏ hơn đó. Hình 3.4 trình bày việc thực thi và kiểm thử thuật toán này.
+
+\begin{tcolorbox}[title=Hình 3.4: Sử dụng tìm kiếm nhị phân (bisection search) để xấp xỉ căn bậc hai]
+
+\begin{verbatim}
+x = 25
+epsilon = 0.01
+numGuesses = 0
+low = 0.0
+high = max(1.0, x)
+ans = (high + low)/2.0
+while abs(ans**2 - x) >= epsilon:
+    print('low =', low, 'high =', high, 'ans =', ans)
+    numGuesses += 1
+    if ans**2 < x:
+        low = ans
+    else:
+        high = ans
+    ans = (high + low)/2.0
+print('numGuesses =', numGuesses)
+print(ans, 'is close to square root of', x)
+\end{verbatim}
+
+\end{tcolorbox}
+
+Khi chạy, nó in ra:
+
+\begin{verbatim}
+low = 0.0 high = 25 ans = 12.5
+low = 0.0 high = 12.5 ans = 6.25
+low = 0.0 high = 6.25 ans = 3.125
+low = 3.125 high = 6.25 ans = 4.6875
+low = 4.6875 high = 6.25 ans = 5.46875 
+low = 4.6875 high = 5.46875 ans = 5.078125 
+low = 4.6875 high = 5.078125 ans = 4.8828125 
+low = 4.8828125 high = 5.078125 ans = 4.98046875 
+low = 4.98046875 high = 5.078125 ans = 5.029296875 
+low = 4.98046875 high = 5.029296875 ans = 5.0048828125 
+low = 4.98046875 high = 5.0048828125 ans = 4.99267578125 
+low = 4.99267578125 high = 5.0048828125 ans = 4.998779296875 
+low = 4.998779296875 high = 5.0048828125 ans = 5.0018310546875
+numGuesses = 13
+5.00030517578125 is close to square root of 25
+\end{verbatim}
+
+Lưu ý rằng nó tìm ra một câu trả lời khác với thuật toán trước đó của chúng ta. Điều đó hoàn toàn ổn, vì nó vẫn đáp ứng các đặc tả của bài toán.
+
+Quan trọng hơn, hãy lưu ý rằng tại mỗi lần lặp của vòng lặp, kích thước của không gian cần tìm kiếm giảm đi một nửa. Bởi vì nó chia đôi không gian tìm kiếm ở mỗi bước, nó được gọi là tìm kiếm nhị phân (bisection search hoặc binary search). Tìm kiếm nhị phân là một sự cải tiến khổng lồ so với thuật toán trước đó của chúng ta (vốn chỉ giảm không gian tìm kiếm một lượng rất nhỏ ở mỗi lần lặp).
+
+Hãy thử lại với \texttt{x = 123456}. Lần này chương trình chỉ mất 30 lần đoán để tìm ra câu trả lời chấp nhận được. Còn với \texttt{x = 123456789}? Nó chỉ mất 45 lần đoán.
+
+Không có gì đặc biệt về việc chúng ta đang sử dụng thuật toán này để tìm căn bậc hai. Ví dụ, bằng cách thay đổi một vài số 2 thành số 3, chúng ta có thể sử dụng nó để xấp xỉ căn bậc ba của một số không âm. Trong Chương 4, chúng ta sẽ giới thiệu một cơ chế ngôn ngữ cho phép chúng ta tổng quát hóa mã nguồn này để tìm bất kỳ căn bậc $n$ nào.
+
+\noindent \textbf{Bài tập nhỏ:} Mã nguồn trong Hình 3.4 sẽ làm gì nếu câu lệnh \texttt{x = 25} được thay thế bằng \texttt{x = -25}?
+
+\noindent \textbf{Bài tập nhỏ:} Cần phải thay đổi điều gì để mã nguồn trong Hình 3.4 hoạt động được cho việc tìm xấp xỉ căn bậc ba của cả số âm và số dương? (Gợi ý: hãy nghĩ về việc thay đổi \texttt{low} để đảm bảo đáp án nằm trong vùng đang được tìm kiếm.)
+
+%=============SEC================
+\section*{3.4 Một vài lưu ý khi sử dụng số thực dấu phẩy động (Floats)}
+\addcontentsline{toc}{section}{\textcolor{black}{3.4 Một vài lưu ý khi sử dụng số thực dấu phẩy động (Floats)}}
+
+\noindent \indent Hầu hết thời gian, các con số thuộc kiểu \texttt{float} cung cấp một xấp xỉ khá tốt cho các số thực. Nhưng ``hầu hết thời gian'' không có nghĩa là tất cả mọi lúc, và khi chúng không làm được điều đó, nó có thể dẫn đến những hệ quả đáng ngạc nhiên. Ví dụ, hãy thử chạy đoạn mã sau:
+
+\begin{verbatim}
+x = 0.0 
+for i in range(10): 
+    x = x + 0.1 
+if x == 1.0: 
+    print(x, '= 1.0') 
+else: 
+    print(x, 'is not 1.0')
+\end{verbatim}
+
+Có lẽ bạn, cũng giống như hầu hết mọi người, sẽ thấy ngạc nhiên khi nó in ra:
+
+\begin{verbatim}
+0.9999999999999999 is not 1.0
+\end{verbatim}
+
+Tại sao ngay từ đầu nó lại rơi vào nhánh \texttt{else}? Để hiểu tại sao điều này xảy ra, chúng ta cần hiểu cách các số dấu phẩy động được biểu diễn trong máy tính trong suốt quá trình tính toán. Để hiểu được điều đó, chúng ta cần hiểu về số nhị phân.
+
+Khi lần đầu tiên học về số thập phân — tức là các số cơ số 10 — bạn đã học được rằng bất kỳ số thập phân nào cũng có thể được biểu diễn bằng một chuỗi các chữ số từ 0 đến 9. Chữ số ở tận cùng bên phải là hàng $10^0$, chữ số tiếp theo về bên trái là hàng $10^1$, v.v. Ví dụ, chuỗi chữ số thập phân 302 biểu thị $3 \times 10^2 + 0 \times 10^1 + 2 \times 10^0$. Có bao nhiêu số khác nhau có thể được biểu diễn bằng một chuỗi có độ dài $n$? Một chuỗi độ dài 1 có thể biểu diễn bất kỳ số nào trong số mười số (0-9); một chuỗi độ dài 2 có thể biểu diễn một trăm số (0-99). Tổng quát hơn, với một chuỗi có độ dài $n$, người ta có thể biểu diễn $10^n$ số khác nhau.
+
+Số nhị phân — số cơ số 2 — cũng hoạt động tương tự. Một số nhị phân được biểu diễn bằng một chuỗi các chữ số mà mỗi chữ số chỉ có thể là 0 hoặc 1. Các chữ số này thường được gọi là bit. Chữ số ở tận cùng bên phải là hàng $2^0$, chữ số tiếp theo về bên trái là hàng $2^1$, v.v. Ví dụ, chuỗi chữ số nhị phân 101 biểu thị $1 \times 4 + 0 \times 2 + 1 \times 1 = 5$. Có bao nhiêu số khác nhau có thể được biểu diễn bằng một chuỗi có độ dài $n$? Đáp án là $2^n$.
+
+\noindent \textbf{Bài tập nhỏ:} Giá trị thập phân tương đương của số nhị phân 10011 là bao nhiêu?
+
+Có lẽ vì hầu hết mọi người có mười ngón tay, chúng ta dường như thích sử dụng hệ thập phân để biểu diễn các con số. Mặt khác, tất cả các hệ thống máy tính hiện đại đều biểu diễn số ở dạng nhị phân. Điều này không phải vì máy tính sinh ra với hai ngón tay, mà là vì việc xây dựng các công tắc phần cứng (các thiết bị chỉ có thể ở một trong hai trạng thái: bật hoặc tắt) là rất dễ dàng. Việc máy tính sử dụng biểu diễn nhị phân trong khi con người sử dụng biểu diễn thập phân đôi khi có thể dẫn đến sự ``mâu thuẫn trong nhận thức'' (cognitive dissonance).
+
+Trong hầu hết các ngôn ngữ lập trình hiện đại, các số không phải số nguyên được hiện thực hóa bằng một dạng biểu diễn gọi là dấu phẩy động (floating point). Hiện tại, hãy giả vờ rằng biểu diễn nội bộ là hệ thập phân. Chúng ta sẽ biểu diễn một con số dưới dạng một cặp số nguyên — các chữ số có nghĩa (significant digits) của con số đó và một số mũ (exponent). Ví dụ, số 1.949 sẽ được biểu diễn dưới dạng cặp $(1949, -3)$, tương ứng với tích $1949 \times 10^{-3}$.
+
+Số lượng chữ số có nghĩa xác định độ chính xác (precision) mà các con số có thể được biểu diễn. Ví dụ, nếu chỉ có hai chữ số có nghĩa, số 1.949 không thể được biểu diễn chính xác. Nó sẽ phải được chuyển đổi thành một xấp xỉ nào đó của 1.949, trong trường hợp này là 1.9. Xấp xỉ đó được gọi là giá trị làm tròn (rounded value).
+
+Máy tính hiện đại sử dụng biểu diễn nhị phân, không phải thập phân. Chúng ta biểu diễn các chữ số có nghĩa và số mũ ở dạng nhị phân thay vì thập phân và nâng cơ số 2 thay vì cơ số 10 lên lũy thừa của số mũ. Ví dụ, số 0.625 (tức 5/8) sẽ được biểu diễn dưới dạng cặp $(101, -11)$; vì 5/8 là 0.101 trong hệ nhị phân và -11 là biểu diễn nhị phân của -3, cặp $(101, -11)$ có nghĩa là $5 \times 2^{-3} = 5/8 = 0.625$.
+
+Vậy còn phân số thập phân $1/10$, thứ mà chúng ta viết trong Python là \texttt{0.1} thì sao? Kết quả tốt nhất chúng ta có thể đạt được với bốn chữ số nhị phân có nghĩa là $(0011, -101)$. Điều này tương đương với $3/32$, tức là 0.09375. Nếu chúng ta có năm chữ số nhị phân có nghĩa, chúng ta sẽ biểu diễn 0.1 là $(11001, -1000)$, tương đương với $25/256$, tức là 0.09765625. Chúng ta cần bao nhiêu chữ số có nghĩa để có được một biểu diễn dấu phẩy động chính xác cho 0.1? Một số lượng chữ số vô hạn! Không tồn tại các số nguyên $sig$ và $exp$ sao cho $sig \times 2^{-exp}$ bằng đúng 0.1.
+
+Vì vậy, cho dù Python (hay bất kỳ ngôn ngữ nào khác) chọn sử dụng bao nhiêu bit để biểu diễn các số dấu phẩy động, nó cũng sẽ chỉ có thể biểu diễn một xấp xỉ của 0.1. Trong hầu hết các bản thực thi Python, có 53 bit độ chính xác dành cho số dấu phẩy động, vì vậy các chữ số có nghĩa được lưu trữ cho số thập phân 0.1 sẽ là:
+
+\begin{verbatim}
+11001100110011001100110011001100110011001100110011001
+\end{verbatim}
+
+Giá trị này tương đương với số thập phân:
+
+\begin{verbatim}
+0.1000000000000000055511151231257827021181583404541015625
+\end{verbatim}
+
+Rất gần với $1/10$, nhưng không chính xác là $1/10$.
+
+Quay lại điều bí ẩn ban đầu, tại sao đoạn mã cộng 0.1 mười lần lại in ra \texttt{0.9999999999999999 is not 1.0}? Bây giờ chúng ta đã hiểu rằng phép thử \texttt{x == 1.0} cho kết quả \texttt{False} vì giá trị mà \texttt{x} liên kết không chính xác là 1.0. Chuyện gì sẽ xảy ra nếu chúng ta thêm vào cuối nhánh \texttt{else} đoạn mã \texttt{print(x == 10.0 * 0.1)}? Nó sẽ in ra \texttt{False} vì trong ít nhất một lần lặp của vòng lặp, Python đã dùng hết các chữ số có nghĩa và thực hiện việc làm tròn. Nó không giống như những gì giáo viên tiểu học đã dạy chúng ta, nhưng việc cộng 0.1 mười lần không tạo ra cùng một giá trị như việc nhân 0.1 với 10.$^{18}$
+
+Nhân tiện, nếu bạn muốn làm tròn một số dấu phẩy động một cách rõ ràng, hãy sử dụng hàm \texttt{round()}. Biểu thức \texttt{round(x, numDigits)} trả về số dấu phẩy động tương đương với việc làm tròn giá trị của \texttt{x} đến \texttt{numDigits} chữ số thập phân sau dấu phẩy. Ví dụ, \texttt{print(round(2**0.5, 3))} sẽ in ra 1.414 như một xấp xỉ của căn bậc hai của 2.
+
+Sự khác biệt giữa số thực và số dấu phẩy động có thực sự quan trọng không? May mắn thay, hầu hết thời gian thì không. Có rất ít tình huống mà 1.0 là một câu trả lời chấp nhận được nhưng 0.9999999999999999 thì không. Tuy nhiên, một điều gần như luôn đáng lo ngại là các phép thử so sánh bằng (\texttt{==}). Như chúng ta đã thấy, sử dụng \texttt{==} để so sánh hai giá trị dấu phẩy động có thể tạo ra kết quả đáng ngạc nhiên. Hầu như luôn phù hợp hơn nếu hỏi liệu hai giá trị dấu phẩy động có đủ gần nhau hay không, thay vì liệu chúng có đồng nhất hay không. Vì vậy, tốt hơn hết là nên viết \texttt{abs(x - y) < 0.0001} thay vì \texttt{x == y}.
+
+Một điều khác cần lo lắng là sự tích tụ của sai số làm tròn (accumulation of rounding errors). Hầu hết thời gian mọi thứ diễn ra ổn thỏa vì đôi khi con số được lưu trữ trong máy tính lớn hơn một chút so với dự định, và đôi khi nó nhỏ hơn một chút. Tuy nhiên, trong một số chương trình, các sai số này có thể cùng đi theo một hướng và tích tụ dần theo thời gian.
+
+%=============SEC================
+\section*{3.5 Phương pháp Newton-Raphson}
+\addcontentsline{toc}{section}{\textcolor{black}{3.5 Phương pháp Newton-Raphson}}
+
+\noindent \indent Thuật toán xấp xỉ được sử dụng phổ biến nhất thường được quy cho Isaac Newton. Nó thường được gọi là phương pháp Newton, nhưng đôi khi cũng được gọi là phương pháp Newton-Raphson.$^{19}$ Nó có thể được sử dụng để tìm nghiệm thực của nhiều loại hàm số, nhưng chúng ta sẽ chỉ xem xét nó trong ngữ cảnh tìm nghiệm thực của một đa thức một biến. Việc tổng quát hóa cho các đa thức nhiều biến là khá đơn giản cả về mặt toán học lẫn thuật toán.
+
+Một đa thức một biến (theo quy ước, chúng ta sẽ viết biến là $x$) là số 0 hoặc là tổng của một số hữu hạn các hạng tử khác không, ví dụ: $3x^2 + 2x + 3$. Mỗi hạng tử (ví dụ: $3x^2$) bao gồm một hằng số (gọi là hệ số của hạng tử, trong trường hợp này là 3) nhân với biến số ($x$) được nâng lên một số mũ nguyên không âm (trong trường hợp này là 2). Số mũ của biến trong một hạng tử được gọi là bậc của hạng tử đó. Bậc của đa thức là bậc lớn nhất của bất kỳ hạng tử đơn lẻ nào trong đó. Một số ví dụ bao gồm: $3$ (bậc 0), $2.5x + 12$ (bậc 1), và $3x^2$ (bậc 2). Ngược lại, $2/x$ và $x^{0.5}$ không phải là đa thức.
+
+Nếu $p$ là một đa thức và $r$ là một số thực, chúng ta viết $p(r)$ để biểu thị giá trị của đa thức khi $x = r$. Một nghiệm của đa thức $p$ là lời giải cho phương trình $p = 0$, tức là một số $r$ sao cho $p(r) = 0$. Vì vậy, ví dụ, bài toán tìm xấp xỉ căn bậc hai của 24 có thể được lập công thức là tìm một số $x$ sao cho $x^2 - 24 \approx 0$.
+
+Newton đã chứng minh một định lý ngụ ý rằng: nếu một giá trị (gọi là $guess$) là một xấp xỉ cho nghiệm của một đa thức, thì:
+
+$$
+guess - \frac{p(guess)}{p'(guess)}
+$$
+
+trong đó $p'$ là đạo hàm bậc nhất của $p$, sẽ là một xấp xỉ tốt hơn.$^{20}$
+
+Với bất kỳ hằng số $k$ và hệ số $c$ nào, đạo hàm bậc nhất của đa thức $cx^2 + k$ là $2cx$. Ví dụ, đạo hàm bậc nhất của $x^2 - k$ là $2x$. Do đó, chúng ta biết rằng có thể cải thiện giá trị dự đoán hiện tại (gọi là $y$) bằng cách chọn giá trị dự đoán tiếp theo là:
+
+$$
+y - \frac{y^2 - k}{2y}
+$$
+
+Đây được gọi là phương pháp xấp xỉ liên tiếp (successive approximation). Hình 3.5 trình bày đoạn mã minh họa cách sử dụng ý tưởng này để nhanh chóng tìm ra xấp xỉ của căn bậc hai.
+
+\begin{tcolorbox}[title=Hình 3.5: Cài đặt phương pháp Newton-Raphson]
+
+\begin{verbatim}
+# Phương pháp Newton-Raphson tìm căn bậc hai
+# Tìm x sao cho x**2 - 24 nằm trong khoảng epsilon của 0
+epsilon = 0.01
+k = 24.0
+guess = k/2.0
+while abs(guess*guess - k) >= epsilon:
+    guess = guess - (((guess**2) - k)/(2*guess))
+print('Square root of', k, 'is about', guess)
+\end{verbatim}
+
+\end{tcolorbox}
+
+\noindent \textbf{Bài tập nhỏ:} Hãy thêm mã nguồn vào phần cài đặt Newton-Raphson để theo dõi số lượng vòng lặp cần thiết để tìm ra nghiệm. Sử dụng đoạn mã đó như một phần của chương trình so sánh hiệu quả giữa Newton-Raphson và tìm kiếm nhị phân (bisection search). (Bạn sẽ khám phá ra rằng Newton-Raphson hiệu quả hơn nhiều).
+
+
